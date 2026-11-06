@@ -21,14 +21,14 @@
     "start": "electron .",
     "test": "node --test",
     "check": "node --check main.js && node --check preload.js && node --check serial-protocol.js && node --check serial-manager.js && node --check app-config.js && node --check config-store.js && node --check layout.js && node --check src/renderer.js",
-    "dist": "electron-builder --linux AppImage deb pacman --x64",
-    "dist:linux": "electron-builder --linux AppImage deb pacman --x64",
-    "dist:appimage": "electron-builder --linux AppImage --x64",
-    "dist:deb": "electron-builder --linux deb --x64",
-    "dist:rpm": "electron-builder --linux rpm --x64",
-    "dist:pacman": "electron-builder --linux pacman --x64",
-    "dist:windows": "electron-builder --win nsis --x64 --arm64",
-    "dist:mac": "electron-builder --mac dmg zip --x64 --arm64"
+    "dist": "electron-builder --linux AppImage deb pacman --x64 --publish never",
+    "dist:linux": "electron-builder --linux AppImage deb pacman --x64 --publish never",
+    "dist:appimage": "electron-builder --linux AppImage --x64 --publish never",
+    "dist:deb": "electron-builder --linux deb --x64 --publish never",
+    "dist:rpm": "electron-builder --linux rpm --x64 --publish never",
+    "dist:pacman": "electron-builder --linux pacman --x64 --publish never",
+    "dist:windows": "electron-builder --win nsis --x64 --arm64 --publish never",
+    "dist:mac": "electron-builder --mac dmg zip --x64 --arm64 --publish never"
   },
   "dependencies": {
     "serialport": "^13.0.0"
