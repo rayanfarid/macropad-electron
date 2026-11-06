@@ -20,6 +20,9 @@ test("development IPC accepts localhost and the explicitly configured developmen
   assert.equal(isTrustedIpcSender(eventFor("http://devbox.internal:8080/app"), {
     ...options, isPackaged: false, developmentUrl: "http://devbox.internal:8080/"
   }), true);
+  assert.equal(isTrustedIpcSender(eventFor("https://devbox.internal:8443/app"), {
+    ...options, isPackaged: false, developmentUrl: "https://devbox.internal:8443/"
+  }), true);
 });
 
 test("development IPC rejects unlisted origins and non-HTTP localhost URLs", () => {

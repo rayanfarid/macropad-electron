@@ -8,14 +8,14 @@ function isAllowedDevelopmentUrl(frameUrl, developmentUrl) {
   } catch {
     return false;
   }
-  if (frame.protocol !== "http:" || frame.username || frame.password) return false;
+  if (frame.username || frame.password) return false;
 
   // Local development servers may use any port, but must remain on localhost.
-  if (frame.hostname === "localhost") return true;
+  if (frame.protocol === "http:" && frame.hostname === "localhost") return true;
   if (!developmentUrl) return false;
   try {
     const configured = new URL(developmentUrl);
-    return configured.protocol === "http:" && !configured.username && !configured.password &&
+    return ["http:", "https:"].includes(configured.protocol) && !configured.username && !configured.password &&
       frame.origin === configured.origin;
   } catch {
     return false;
