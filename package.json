@@ -20,7 +20,7 @@
   "scripts": {
     "start": "electron .",
     "test": "node --test",
-    "check": "node --check main.js && node --check preload.js && node --check serial-protocol.js && node --check serial-manager.js && node --check app-config.js && node --check config-store.js && node --check layout.js && node --check src/renderer.js",
+    "check": "node --check main.js && node --check preload.js && node --check ipc-security.js && node --check serial-protocol.js && node --check serial-manager.js && node --check app-config.js && node --check config-store.js && node --check layout.js && node --check src/renderer.js",
     "dist": "electron-builder --linux AppImage deb pacman --x64 --publish never",
     "dist:linux": "electron-builder --linux AppImage deb pacman --x64 --publish never",
     "dist:appimage": "electron-builder --linux AppImage --x64 --publish never",
@@ -51,6 +51,7 @@
     ],
     "files": [
       "main.js",
+      "ipc-security.js",
       "serial-protocol.js",
       "serial-manager.js",
       "app-config.js",

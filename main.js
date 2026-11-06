@@ -13,6 +13,7 @@ const {
   firmwarePayload
 } = require("./app-config");
 const { loadConfig, saveConfig } = require("./config-store");
+const { assertTrustedIpcSender, isAllowedDevelopmentUrl } = require("./ipc-security");
 
 const MAX_IMPORT_BYTES = 1024 * 1024;
 const serial = new SerialManager();
@@ -26,11 +27,12 @@ function send(channel, value) {
 }
 
 function assertTrustedRenderer(event) {
-  const frameUrl = event.senderFrame?.url;
-  if (!frameUrl || !frameUrl.startsWith("file://")) throw new Error("Untrusted IPC caller");
-  const actualPath = path.resolve(new URL(frameUrl).pathname);
-  const expectedPath = path.resolve(__dirname, "src", "index.html");
-  if (actualPath !== expectedPath) throw new Error("Untrusted IPC caller");
+  assertTrustedIpcSender(event, {
+    expectedWebContents: mainWindow?.webContents,
+    isPackaged: app.isPackaged,
+    appDirectory: __dirname,
+    developmentUrl: process.env.MACROPAD_DEV_URL
+  });
 }
 
 async function persistConfig(config) {
@@ -55,11 +57,14 @@ function createWindow() {
     }
   });
 
-  mainWindow.loadFile(path.join(__dirname, "src", "index.html"));
+  const developmentUrl = !app.isPackaged && process.env.MACROPAD_DEV_URL;
+  if (developmentUrl) mainWindow.loadURL(developmentUrl);
+  else mainWindow.loadFile(path.join(__dirname, "src", "index.html"));
   mainWindow.on("closed", () => { mainWindow = null; });
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
   mainWindow.webContents.on("will-navigate", (event, url) => {
-    if (!url.startsWith("file://")) event.preventDefault();
+    const allowed = url.startsWith("file://") || (!app.isPackaged && isAllowedDevelopmentUrl(url, process.env.MACROPAD_DEV_URL));
+    if (!allowed) event.preventDefault();
   });
 }
 
