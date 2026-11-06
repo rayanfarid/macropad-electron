@@ -1,0 +1,127 @@
+{
+  "name": "macropad-app",
+  "version": "1.0.0",
+  "description": "Configure your ESP32-S3 Macropad shortcuts, encoder, and visual layout",
+  "productName": "Macropad Studio",
+  "author": {
+    "name": "Macropad Studio",
+    "email": "rayan.farid.buisness@gmail.com"
+  },
+  "homepage": "https://github.com/rayanfarid/macropad-electron",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rayanfarid/macropad-electron.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rayanfarid/macropad-electron/issues"
+  },
+  "desktopName": "com.macropad.studio.desktop",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test",
+    "check": "node --check main.js && node --check preload.js && node --check serial-protocol.js && node --check serial-manager.js && node --check app-config.js && node --check config-store.js && node --check layout.js && node --check src/renderer.js",
+    "dist": "electron-builder --linux AppImage deb pacman --x64",
+    "dist:linux": "electron-builder --linux AppImage deb pacman --x64",
+    "dist:appimage": "electron-builder --linux AppImage --x64",
+    "dist:deb": "electron-builder --linux deb --x64",
+    "dist:rpm": "electron-builder --linux rpm --x64",
+    "dist:pacman": "electron-builder --linux pacman --x64",
+    "dist:windows": "electron-builder --win nsis --x64 --arm64",
+    "dist:mac": "electron-builder --mac dmg zip --x64 --arm64"
+  },
+  "dependencies": {
+    "serialport": "^13.0.0"
+  },
+  "devDependencies": {
+    "electron": "^39.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "com.macropad.studio",
+    "productName": "Macropad Studio",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "asar": true,
+    "npmRebuild": false,
+    "asarUnpack": [
+      "**/*.node"
+    ],
+    "files": [
+      "main.js",
+      "serial-protocol.js",
+      "serial-manager.js",
+      "app-config.js",
+      "config-store.js",
+      "layout.js",
+      "preload.js",
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "linux": {
+      "maintainer": "Macropad Studio <rayan.farid.buisness@gmail.com>",
+      "icon": "build/icon.svg",
+      "target": [
+        "AppImage",
+        "deb",
+        "pacman"
+      ],
+      "category": "Utility",
+      "synopsis": "Configure your ESP32-S3 Macropad",
+      "description": "A native desktop editor for Macropad buttons, encoder actions, host profiles, and local visual layout.",
+      "desktop": {
+        "entry": {
+          "Name": "Macropad Studio",
+          "Comment": "Configure your ESP32-S3 Macropad",
+          "Categories": "Utility;Settings;",
+          "Keywords": "macropad;esp32;shortcuts;keyboard;",
+          "StartupWMClass": "com.macropad.studio",
+          "Terminal": false,
+          "Type": "Application"
+        }
+      },
+      "syncDesktopName": true,
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "artifactName": "${productName}-${version}-${arch}-Setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.utilities",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "pacman": {
+      "depends": [
+        "gtk3",
+        "libnotify",
+        "nss",
+        "libxss",
+        "libxtst",
+        "xdg-utils",
+        "at-spi2-core",
+        "libsecret"
+      ]
+    }
+  },
+  "allowScripts": {
+    "electron@39.8.10": true,
+    "@serialport/bindings-cpp@13.0.0": true,
+    "electron-winstaller@5.4.0": true
+  }
+}

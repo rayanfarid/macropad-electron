@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'">
+  <title>Macropad Studio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="../assets/icon.svg" alt="" class="brand-mark">
+        <div><strong>Macropad</strong><span>STUDIO</span></div>
+      </div>
+
+      <section class="side-device panel">
+        <div class="device-heading"><span id="connectionDot" class="connection-dot"></span><span>DEVICE</span></div>
+        <strong id="sideConnection">Searching…</strong>
+        <span id="sidePort" class="muted">No serial port</span>
+      </section>
+
+      <label class="profile-label" for="hostSelect">HOST PROFILE</label>
+      <select id="hostSelect" class="profile-select">
+        <option value="WINDOWS">Windows</option>
+        <option value="LINUX">Linux</option>
+        <option value="MACOS">macOS</option>
+        <option value="OMARCHY">Omarchy</option>
+      </select>
+
+      <nav class="navigation" aria-label="Main navigation">
+        <button class="nav-item active" data-view="dashboard"><span class="nav-icon">◫</span>Dashboard</button>
+        <button class="nav-item" data-view="buttons"><span class="nav-icon">▦</span>Button editor</button>
+        <button class="nav-item" data-view="encoder"><span class="nav-icon">◉</span>Encoder settings</button>
+        <button class="nav-item" data-view="layout"><span class="nav-icon">⠿</span>Layout editor</button>
+        <button class="nav-item" data-view="settings"><span class="nav-icon">⚙</span>Settings</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="sync-indicator" id="syncIndicator"></span>
+        <span id="syncLabel">Not synchronized</span>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow" id="pageEyebrow">MACROPAD CONTROL</div>
+          <h1 id="pageTitle">Dashboard</h1>
+        </div>
+        <div class="top-actions">
+          <button id="connectButton" class="button secondary">Connect</button>
+          <button id="disconnectButton" class="button secondary" disabled>Disconnect</button>
+          <button id="reloadDeviceButton" class="button secondary" disabled>Reload from device</button>
+          <button id="resetDeviceButton" class="button danger" disabled>Reset device</button>
+          <button id="saveDeviceButton" class="button primary" disabled>Save to device</button>
+        </div>
+      </header>
+
+      <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+      <section id="view-dashboard" class="view active-view">
+        <div class="welcome-row">
+          <div><h2>Your Macropad at a glance</h2><p>Configure physical keys and keep your visual layout personal.</p></div>
+          <div class="sync-pill"><span id="syncPillDot"></span><span id="syncPillText">Waiting for device</span></div>
+        </div>
+        <div class="stat-grid">
+          <article class="stat-card panel"><span class="stat-label">DEVICE STATUS</span><strong id="dashboardStatus">Searching</strong><span id="dashboardPort" class="muted">Scanning serial ports</span></article>
+          <article class="stat-card panel"><span class="stat-label">HOST PROFILE</span><strong id="dashboardHost">Windows</strong><span class="muted">Saved to the ESP32 on sync</span></article>
+          <article class="stat-card panel"><span class="stat-label">CONFIGURED KEYS</span><strong><span id="configuredCount">0</span><small> / 12</small></strong><span class="muted">Nine buttons and three encoder actions</span></article>
+          <article class="stat-card panel"><span class="stat-label">LAST SYNC</span><strong id="lastSync">Not yet</strong><span id="syncDetail" class="muted">Device settings stay separate from layout</span></article>
+        </div>
+        <div class="dashboard-grid">
+          <article class="panel dashboard-board-panel">
+            <div class="panel-heading"><div><h3>Physical keypad</h3><p>Click a key to edit its firmware slot.</p></div><button class="text-button" data-go-view="buttons">Open editor <span>↗</span></button></div>
+            <div id="dashboardBoard" class="macropad-grid compact-grid"></div>
+          </article>
+          <article class="panel encoder-summary-panel">
+            <div class="panel-heading"><div><h3>Rotary encoder</h3><p>Three configurable actions</p></div><button class="icon-button" data-go-view="encoder" aria-label="Open encoder settings">↗</button></div>
+            <div id="dashboardEncoder" class="encoder-summary"></div>
+          </article>
+        </div>
+        <article class="panel activity-panel">
+          <div class="panel-heading"><div><h3>Device activity</h3><p>Serial messages and synchronization events</p></div><button id="clearActivityButton" class="text-button">Clear log</button></div>
+          <pre id="activityLog" class="activity-log" aria-live="polite"></pre>
+        </article>
+      </section>
+
+      <section id="view-buttons" class="view">
+        <div class="view-intro"><div><h2>Button editor</h2><p>Each visual key keeps its physical firmware slot. Labels and shortcuts sync only when you choose Save to device.</p></div><span class="host-chip" id="buttonHostChip">Windows</span></div>
+        <div class="editor-layout">
+          <article class="panel editor-board-panel"><div class="panel-heading"><div><h3>3 × 3 Macropad</h3><p>Physical slots are shown on each key.</p></div><span class="live-tag">LIVE PREVIEW</span></div><div id="buttonEditorBoard" class="macropad-grid editor-grid"></div></article>
+          <article class="panel inspector-panel">
+            <div class="inspector-header"><span class="slot-badge" id="selectedSlotBadge">SW1</span><div><h3 id="selectedSlotTitle">Button 1</h3><p>Physical slot · <span id="selectedPosition">Position 1</span></p></div></div>
+            <label class="field-label" for="buttonLabel">Button label <span>8 characters max</span></label>
+            <input id="buttonLabel" class="text-input" maxlength="8" autocomplete="off" placeholder="e.g. Browser">
+            <label class="field-label" for="buttonShortcut">Shortcut assignment <span id="shortcutHostLabel">Windows</span></label>
+            <input id="buttonShortcut" class="text-input mono-input" maxlength="64" autocomplete="off" placeholder="CTRL+SHIFT+M">
+            <div class="shortcut-preview"><span class="preview-label">CURRENT ACTION</span><kbd id="shortcutPreview">NONE</kbd></div>
+            <div class="inspector-actions"><button id="clearShortcutButton" class="button secondary">Clear assignment</button><button id="restoreButtonDefault" class="text-button">Restore slot defaults</button></div>
+            <p class="help-note">Changes are kept locally until you explicitly save them to the Macropad.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="view-encoder" class="view">
+        <div class="view-intro"><div><h2>Encoder settings</h2><p>Configure clockwise, counterclockwise, and press actions independently.</p></div><span class="host-chip" id="encoderHostChip">Windows</span></div>
+        <div id="encoderEditor" class="encoder-editor-grid"></div>
+        <article class="panel encoder-note"><span class="note-icon">◉</span><div><strong>Encoder actions use the same host profile</strong><p>Switch profiles in the sidebar to edit the actions for another operating system.</p></div></article>
+      </section>
+
+      <section id="view-layout" class="view">
+        <div class="view-intro"><div><h2>Layout editor</h2><p>Arrange the nine physical buttons on your personal 3 × 3 canvas. This never changes GPIO or firmware slot IDs.</p></div><span class="local-tag">LOCAL ONLY</span></div>
+        <div class="layout-toolbar panel"><div><strong id="layoutModeTitle">Layout saved</strong><p id="layoutModeHint">Enter edit mode to rearrange keys or change their visual size.</p></div><div class="toolbar-actions"><button id="editLayoutButton" class="button secondary">Edit layout</button><button id="cancelLayoutButton" class="button secondary" hidden>Cancel</button><button id="resetLayoutButton" class="button secondary" hidden>Reset layout</button><button id="saveLayoutButton" class="button primary" hidden>Save layout</button></div></div>
+        <div class="layout-workspace">
+          <article class="panel layout-board-panel"><div class="panel-heading"><div><h3>Visual positions</h3><p>Drag one key onto another to swap their positions.</p></div><span class="local-tag">NO DEVICE WRITES</span></div><div id="layoutBoard" class="macropad-grid layout-grid"></div></article>
+          <article class="panel layout-inspector"><h3>Visual size</h3><p>Resize the selected key within the 3 × 3 canvas.</p><label class="field-label" for="layoutWidth">Width</label><select id="layoutWidth" class="text-input"><option value="1">1 cell</option><option value="2">2 cells</option><option value="3">3 cells</option></select><label class="field-label" for="layoutHeight">Height</label><select id="layoutHeight" class="text-input"><option value="1">1 cell</option><option value="2">2 cells</option><option value="3">3 cells</option></select><span id="layoutSelection" class="muted">Select a key</span></article>
+        </div>
+      </section>
+
+      <section id="view-settings" class="view">
+        <div class="view-intro"><div><h2>Settings</h2><p>Manage local preferences, device details, and configuration files.</p></div></div>
+        <div class="settings-grid">
+          <article class="panel settings-card"><div class="panel-heading"><div><h3>Appearance</h3><p>Choose how Macropad Studio looks.</p></div></div><label class="field-label" for="themeSelect">Theme</label><select id="themeSelect" class="text-input"><option value="dark">Dark</option><option value="light">Light</option></select><label class="field-label" for="gridGapSelect">Visual key spacing</label><select id="gridGapSelect" class="text-input"><option value="8">Compact</option><option value="12">Comfortable</option><option value="16">Relaxed</option><option value="20">Wide</option><option value="24">Extra wide</option></select></article>
+          <article class="panel settings-card"><div class="panel-heading"><div><h3>Configuration files</h3><p>Versioned JSON; import preview never writes to the ESP32.</p></div></div><div class="settings-actions"><button id="exportButton" class="button secondary">Export settings</button><button id="importButton" class="button secondary">Import settings</button></div><div class="settings-divider"></div><button id="restoreUiButton" class="text-button">Restore application UI defaults</button></article>
+          <article class="panel settings-card device-info-card"><div class="panel-heading"><div><h3>Connected device</h3><p>Serial details reported by Linux.</p></div><button id="refreshDeviceInfoButton" class="icon-button" aria-label="Refresh device details">↻</button></div><dl id="deviceInfoList" class="device-info-list"></dl></article>
+          <article class="panel settings-card about-card"><div class="panel-heading"><div><h3>About Macropad Studio</h3><p>Native Electron utility for the ESP32-S3 Macropad.</p></div></div><div class="about-version"><span>Application version</span><strong id="appVersion">—</strong></div><div class="about-version"><span>Configuration format</span><strong>Version 1</strong></div><div class="about-version"><span>Visual layout</span><strong>Local to this app</strong></div></article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="importPreviewDialog" class="modal-dialog">
+    <form method="dialog" id="importPreviewForm">
+      <div class="modal-kicker">SETTINGS IMPORT</div><h2>Review this configuration</h2><p id="importFileName" class="muted"></p>
+      <div id="importSummary" class="import-summary"></div>
+      <p class="help-note">Applying this file updates local application settings only. The Macropad is changed only after a separate, confirmed Save to device action.</p>
+      <div class="modal-actions"><button value="cancel" class="button secondary">Cancel</button><button id="applyImportButton" type="button" class="button primary">Apply to app</button></div>
+    </form>
+  </dialog>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
