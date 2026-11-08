@@ -18,6 +18,9 @@ test("local settings persist macro data and visual layout without contacting fir
   config.layout.positions["7"].row = 1;
   config.layout.positions["7"].column = 0;
   config.preferences.theme = "light";
+  config.screenDesign.pages[0].elements[1].text = "Listening";
+  config.screenDesign.pages[0].elements[1].x = 12;
+  config.screenDesign.pages.push({ id: "status", name: "Status", elements: [] });
 
   await saveConfig(file, config);
   const result = await loadConfig(file);
@@ -31,6 +34,6 @@ test("corrupt local settings return defaults with a useful warning", async t => 
   const file = path.join(dir, "settings.json");
   await fs.writeFile(file, "{invalid json");
   const result = await loadConfig(file);
-  assert.equal(result.config.configurationVersion, 1);
+  assert.equal(result.config.configurationVersion, 4);
   assert.match(result.warning, /could not be loaded/i);
 });

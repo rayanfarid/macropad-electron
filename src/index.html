@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'">
   <title>Macropad Studio</title>
+  <link rel="stylesheet" href="fonts.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -30,11 +31,15 @@
       </select>
 
       <nav class="navigation" aria-label="Main navigation">
-        <button class="nav-item active" data-view="dashboard"><span class="nav-icon">◫</span>Dashboard</button>
-        <button class="nav-item" data-view="buttons"><span class="nav-icon">▦</span>Button editor</button>
-        <button class="nav-item" data-view="encoder"><span class="nav-icon">◉</span>Encoder settings</button>
-        <button class="nav-item" data-view="layout"><span class="nav-icon">⠿</span>Layout editor</button>
-        <button class="nav-item" data-view="settings"><span class="nav-icon">⚙</span>Settings</button>
+        <span class="nav-section-label">Workspace</span>
+        <button class="nav-item active" data-view="dashboard"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/></svg><span>Dashboard</span></button>
+        <button class="nav-item" data-view="buttons"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="9.5" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><rect x="16" y="9.5" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><rect x="9.5" y="16" width="5" height="5" rx="1"/><rect x="16" y="16" width="5" height="5" rx="1"/></svg><span>Macropad</span></button>
+        <button class="nav-item" data-view="screen"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg><span>OLED Designer</span></button>
+        <button class="nav-item" data-view="encoder"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 7v5l3 2"/></svg><span>Encoder</span></button>
+        <button class="nav-item" data-view="games"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12a4 4 0 0 1 3.8 5.2l-1.2 4A2.4 2.4 0 0 1 17 18.5l-2.3-2h-5.4l-2.3 2a2.4 2.4 0 0 1-3.6-1.3l-1.2-4A4 4 0 0 1 6 8Z"/><path d="M7 11v4m-2-2h4m8-1h.01M18 14h.01"/></svg><span>Games</span></button>
+        <span class="nav-section-label settings-nav-label">Preferences</span>
+        <button class="nav-item" data-view="layout"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zm9 0h7v4h-7zm0 6h7v10h-7zm-9 3h7v7H4z"/></svg><span>Key layout</span></button>
+        <button class="nav-item" data-view="settings"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-2.6V20a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1A1.7 1.7 0 0 0 8 15a1.7 1.7 0 0 0-1.6-1H6v-2.6h.4a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6v-.2H15v.2a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2V14h-.2a1.7 1.7 0 0 0-1.6 1Z"/></svg><span>Settings</span></button>
       </nav>
 
       <div class="sidebar-footer">
@@ -70,6 +75,7 @@
           <article class="stat-card panel"><span class="stat-label">HOST PROFILE</span><strong id="dashboardHost">Windows</strong><span class="muted">Saved to the ESP32 on sync</span></article>
           <article class="stat-card panel"><span class="stat-label">CONFIGURED KEYS</span><strong><span id="configuredCount">0</span><small> / 12</small></strong><span class="muted">Nine buttons and three encoder actions</span></article>
           <article class="stat-card panel"><span class="stat-label">LAST SYNC</span><strong id="lastSync">Not yet</strong><span id="syncDetail" class="muted">Device settings stay separate from layout</span></article>
+          <article class="stat-card panel"><span class="stat-label">OLED PAGES</span><strong id="dashboardScreenPages">1</strong><span id="dashboardActivePage" class="muted">Device page not read yet</span></article>
         </div>
         <div class="dashboard-grid">
           <article class="panel dashboard-board-panel">
@@ -88,16 +94,25 @@
       </section>
 
       <section id="view-buttons" class="view">
-        <div class="view-intro"><div><h2>Button editor</h2><p>Each visual key keeps its physical firmware slot. Labels and shortcuts sync only when you choose Save to device.</p></div><span class="host-chip" id="buttonHostChip">Windows</span></div>
+        <div class="view-intro"><div><h2>Macropad</h2><p>Each key keeps its physical firmware slot. Labels and shortcuts sync only when you choose Save to device.</p></div><div class="toolbar-actions"><span class="host-chip" id="buttonHostChip">Windows</span><button class="button secondary" data-go-view="layout">Arrange key layout</button></div></div>
+        <div class="panel macro-page-toolbar"><div class="macro-page-title"><strong>Shortcut page</strong><span id="macroPageCount" class="muted">Page 1 of 1</span></div><select id="macroPageSelect" class="text-input" aria-label="Shortcut page"></select><div class="toolbar-actions"><button id="macroAddPageButton" class="button secondary" type="button">Add</button><button id="macroDuplicatePageButton" class="button secondary" type="button">Duplicate</button><button id="macroRenamePageButton" class="button secondary" type="button">Rename</button><button id="macroDeletePageButton" class="button secondary" type="button">Delete</button></div><p id="macroPageRoleHint" class="screen-side-note">Single page: SW1–SW9 remain assignable.</p></div>
         <div class="editor-layout">
           <article class="panel editor-board-panel"><div class="panel-heading"><div><h3>3 × 3 Macropad</h3><p>Physical slots are shown on each key.</p></div><span class="live-tag">LIVE PREVIEW</span></div><div id="buttonEditorBoard" class="macropad-grid editor-grid"></div></article>
           <article class="panel inspector-panel">
-            <div class="inspector-header"><span class="slot-badge" id="selectedSlotBadge">SW1</span><div><h3 id="selectedSlotTitle">Button 1</h3><p>Physical slot · <span id="selectedPosition">Position 1</span></p></div></div>
+            <div class="inspector-header"><span class="slot-badge" id="selectedSlotBadge">SW1</span><div><h3 id="selectedSlotTitle">Button 1</h3><p id="selectedSlotSubtitle"><span id="selectedSlotKind">Physical slot</span> · <span id="selectedPosition">Position 1</span></p></div></div>
             <label class="field-label" for="buttonLabel">Button label <span>8 characters max</span></label>
             <input id="buttonLabel" class="text-input" maxlength="8" autocomplete="off" placeholder="e.g. Browser">
-            <label class="field-label" for="buttonShortcut">Shortcut assignment <span id="shortcutHostLabel">Windows</span></label>
-            <input id="buttonShortcut" class="text-input mono-input" maxlength="64" autocomplete="off" placeholder="CTRL+SHIFT+M">
-            <div class="shortcut-preview"><span class="preview-label">CURRENT ACTION</span><kbd id="shortcutPreview">NONE</kbd></div>
+            <div id="normalButtonAssignment">
+              <label class="field-label" for="buttonShortcut">Shortcut assignment <span id="shortcutHostLabel">Windows</span></label>
+              <input id="buttonShortcut" class="text-input mono-input" maxlength="64" autocomplete="off" placeholder="CTRL+SHIFT+M">
+              <div class="shortcut-preview"><span class="preview-label">CURRENT ACTION</span><kbd id="shortcutPreview">NONE</kbd></div>
+            </div>
+            <div id="reservedNavigationAction" class="sw9-next-page" hidden>
+              <span class="field-label">Reserved hardware role</span>
+              <kbd id="reservedNavigationBadge" class="sw9-action-badge">Page navigation</kbd>
+              <p id="reservedNavigationHelp" class="help-note">This physical button is reserved by multi-page mode and cannot run a macro.</p>
+            </div>
+            <p id="sw9ActionDescription" class="help-note" hidden></p>
             <div class="inspector-actions"><button id="clearShortcutButton" class="button secondary">Clear assignment</button><button id="restoreButtonDefault" class="text-button">Restore slot defaults</button></div>
             <p class="help-note">Changes are kept locally until you explicitly save them to the Macropad.</p>
           </article>
@@ -105,7 +120,7 @@
       </section>
 
       <section id="view-encoder" class="view">
-        <div class="view-intro"><div><h2>Encoder settings</h2><p>Configure clockwise, counterclockwise, and press actions independently.</p></div><span class="host-chip" id="encoderHostChip">Windows</span></div>
+        <div class="view-intro"><div><h2>Encoder</h2><p>Configure clockwise, counterclockwise, and press actions independently.</p></div><span class="host-chip" id="encoderHostChip">Windows</span></div>
         <div id="encoderEditor" class="encoder-editor-grid"></div>
         <article class="panel encoder-note"><span class="note-icon">◉</span><div><strong>Encoder actions use the same host profile</strong><p>Switch profiles in the sidebar to edit the actions for another operating system.</p></div></article>
       </section>
@@ -119,13 +134,95 @@
         </div>
       </section>
 
+      <section id="view-games" class="view games-view">
+        <div class="view-intro"><div><div class="eyebrow">ESP32-S3 · OLED GAME RUNTIME</div><h2>Games</h2><p>Games run on the Macropad. The ESP32 handles input, game state, scoring, and OLED rendering, even when this app is closed.</p></div><div class="toolbar-actions"><span id="gameStatus" class="local-tag">Connect the ESP32 to control games</span><button id="gameMenuButton" class="button secondary" type="button">Show game menu</button><button id="gameExitButton" class="button secondary" type="button">Exit game mode</button></div></div>
+        <div class="device-games-grid" aria-label="ESP32 games">
+          <article class="panel device-game-card"><div class="game-card-mark" aria-hidden="true">S</div><div><h3>Snake</h3><p>Turn with the encoder. Collect food, grow, and avoid collisions.</p><button id="gameStartSnakeButton" class="button primary" type="button">Start Snake on device</button></div></article>
+          <article class="panel device-game-card"><div class="game-card-mark" aria-hidden="true">3×3</div><div><h3>Tic-Tac-Toe</h3><p>Move the OLED cursor with the encoder and play X against the ESP32.</p><button id="gameStartTttButton" class="button primary" type="button">Start Tic-Tac-Toe on device</button></div></article>
+        </div>
+        <article class="panel games-device-note"><strong>On-device controls</strong><span>Encoder CW/CCW moves or turns · encoder press selects, pauses, or restarts · SW7 backs out · SW9 advances the game selection.</span><span>SW8 opens this OLED game menu. Shortcut pages resume when you exit game mode.</span></article>
+      </section>
+
+      <section id="view-screen" class="view">
+        <div class="screen-studio-heading"><div><div class="eyebrow">DISPLAY WORKSPACE · SSD1306</div><h2>OLED Designer</h2><p>Compose the exact 128 × 64 monochrome screen. Each page and event is stored independently.</p></div><div class="screen-device-actions"><span id="screenDeviceStatus" class="local-tag">LOCAL DESIGN</span><button id="screenReadButton" class="button secondary">Read device</button><button id="screenSaveButton" class="button secondary">Save local</button><button id="screenUploadButton" class="button primary">Upload to ESP32</button></div></div>
+        <div class="screen-studio-toolbar panel"><div class="screen-tool-group"><button id="screenUndoButton" class="icon-button" type="button" aria-label="Undo" data-tooltip="Undo the last design edit">↶</button><button id="screenRedoButton" class="icon-button" type="button" aria-label="Redo" data-tooltip="Redo the last design edit">↷</button><span class="screen-tool-separator"></span><button id="screenAddButton" class="button secondary" type="button">Add text</button><button id="screenAddRectButton" class="button secondary" type="button">Rectangle</button><button id="screenAddFillRectButton" class="button secondary" type="button">Filled rect</button><button id="screenAddCircleButton" class="button secondary" type="button">Circle</button><button id="screenAddFillCircleButton" class="button secondary" type="button">Filled circle</button><button id="screenAddLineButton" class="button secondary" type="button">Line</button><span class="screen-tool-separator"></span><select id="screenIconSelect" class="text-input screen-icon-select" aria-label="Choose built-in icon"></select><button id="screenAddIconButton" class="button secondary" type="button">Icon</button><button id="screenImageImportButton" class="button secondary" type="button">Import image</button><input id="screenImageFile" type="file" accept="image/png,image/jpeg,image/webp,image/bmp" hidden><button id="screenDuplicateButton" class="button secondary" type="button">Duplicate</button></div><div class="screen-tool-group screen-tool-group-right"><button id="screenCopyButton" class="button secondary" type="button">Copy</button><button id="screenPasteButton" class="button secondary" type="button">Paste</button><button id="screenLayerUpButton" class="icon-button" type="button" aria-label="Move layer up" data-tooltip="Bring selected element forward">↑</button><button id="screenLayerDownButton" class="icon-button" type="button" aria-label="Move layer down" data-tooltip="Send selected element backward">↓</button><button id="screenPreviewButton" class="button secondary" type="button">Preview</button><button id="screenImportButton" class="button secondary" type="button">Import</button><button id="screenExportButton" class="button secondary" type="button">Export</button></div></div>
+        <div class="screen-workspace screen-studio-workspace">
+          <aside class="panel screen-navigation-panel screen-library-panel"><div class="screen-panel-title"><div><span class="eyebrow">SCREEN LIBRARY</span><h3>Pages & events</h3></div><span id="screenPageCount" class="screen-count-pill">1 / 1</span></div>
+            <label class="field-label" for="screenPageSelect">OLED page</label><div class="screen-select-row"><select id="screenPageSelect" class="text-input" aria-label="OLED page"></select><button id="screenShowPageButton" class="icon-button" type="button" aria-label="Show selected page on device" data-tooltip="Show this OLED page on the connected device">↗</button></div>
+            <div class="screen-page-actions"><button id="screenAddPageButton" class="button secondary" type="button">Add</button><button id="screenDuplicatePageButton" class="button secondary" type="button">Duplicate</button><button id="screenRenamePageButton" class="button secondary" type="button">Rename</button><button id="screenDeletePageButton" class="button danger subtle-danger" type="button">Delete</button></div>
+            <div class="screen-library-divider"></div><label class="field-label" for="screenEventSelect">OLED event</label><select id="screenEventSelect" class="text-input" aria-label="OLED event"></select>
+            <div id="screenElementsList" class="screen-elements-list" aria-label="Screen elements"></div>
+            <div class="screen-library-divider"></div><div class="screen-event-settings"><label><span class="field-label">Display duration</span><select id="screenEventDuration" class="text-input"><option value="500">500 ms</option><option value="1000">1000 ms</option><option value="1500">1500 ms</option><option value="2000">2000 ms</option><option value="3000">3000 ms</option><option value="STICKY">Until next event</option><option value="HOLD">Until release</option></select></label><label><span class="field-label">Trigger</span><select id="screenEventTrigger" class="text-input"><option value="PRESS">On press</option><option value="RELEASE">On release</option></select></label></div>
+            <label class="field-label" for="screenEventDuplicateTarget">Duplicate event design to</label><div class="screen-select-row"><select id="screenEventDuplicateTarget" class="text-input"></select><button id="screenDuplicateEventButton" class="button secondary" type="button">Duplicate</button></div><p id="screenEventHint" class="screen-side-note">Idle is the normal screen</p><p id="sw9PageHint" class="screen-side-note">Single page: all switches are assignable.</p>
+          </aside>
+          <article class="panel screen-preview-panel screen-canvas-panel"><div class="screen-canvas-header"><div><span class="eyebrow">128 × 64 · 1-BIT</span><h3>Canvas</h3></div><span id="screenEventBadge" class="event-preview-badge">Idle</span></div>
+            <div class="screen-canvas-toolbar"><label>Zoom<select id="screenZoomSelect" class="text-input" aria-label="Canvas zoom"><option value="200">200%</option><option value="300">300%</option><option value="400" selected>400%</option><option value="500">500%</option><option value="600">600%</option></select></label><label class="screen-check"><input id="screenGridToggle" type="checkbox" checked> Grid</label><label class="screen-check"><input id="screenGuidesToggle" type="checkbox" checked> Guides</label><span class="oled-canvas-legend">White = lit · drag to position</span></div>
+            <div class="screen-preview-stage screen-canvas-stage"><div class="screen-canvas-wrap"><canvas id="screenCanvas" width="128" height="64" tabindex="0" aria-label="Editable 128 by 64 pixel OLED preview"></canvas><div id="screenCanvasGrid" class="screen-canvas-grid" aria-hidden="true"></div></div></div><div class="screen-canvas-footer"><span>SSD1306 · I²C · 0x3C</span><span id="screenSelectionLabel">No selection</span></div>
+          </article>
+          <article class="panel screen-inspector screen-properties-panel"><div class="screen-panel-title"><div><span class="eyebrow">INSPECTOR</span><h3>Properties</h3></div><span class="screen-count-pill">ELEMENT</span></div><div id="screenEmptyInspector" class="screen-empty-inspector"><div class="screen-empty-glyph">⌖</div><strong>Select an element</strong><span>Choose a layer or click an element on the canvas.</span></div><div id="screenInspectorFields" hidden>
+            <div id="screenTextFieldWrap"><label class="field-label" for="screenText">Text content <span id="screenTextLimit">21 ASCII max</span></label><input id="screenText" class="text-input" maxlength="21"></div>
+            <div class="screen-field-pair"><label><span class="field-label">X</span><input id="screenX" class="text-input" type="number" min="0" max="127"></label><label><span class="field-label">Y</span><input id="screenY" class="text-input" type="number" min="0" max="63"></label></div>
+            <div class="screen-field-pair"><label><span class="field-label">Width</span><input id="screenWidth" class="text-input" type="number" min="1" max="128"></label><label><span class="field-label">Height</span><input id="screenHeight" class="text-input" type="number" min="1" max="64"></label></div>
+            <div id="screenBindingWrap"><label class="field-label" for="screenBinding">Content binding</label><select id="screenBinding" class="text-input"><option value="STATIC">Static text</option><option value="HOST">Active host</option><option value="LAST">Last switch</option><option value="ENCODER">Last encoder action</option><option value="HID">HID status</option><option value="KEYGRID">Live key grid</option><option value="BITMAP">Bitmap</option></select></div>
+            <div class="screen-field-pair"><label><span class="field-label">Font size · built-in 5×7</span><select id="screenSize" class="text-input"><option value="1">1× · 6×8</option><option value="2">2× · 12×16</option></select></label><label><span class="field-label">Polarity</span><select id="screenMode" class="text-input"><option value="NORMAL">Normal</option><option value="INVERSE">Inverted</option></select></label></div>
+            <div id="screenAlignmentWrap"><label class="field-label" for="screenAlignment">Text alignment</label><select id="screenAlignment" class="text-input"><option value="LEFT">Left</option><option value="CENTER">Center</option><option value="RIGHT">Right</option></select></div>
+            <label class="screen-visibility-row"><input id="screenVisibility" type="checkbox" checked> Visible on OLED</label>
+            <div id="screenImageProperties" class="screen-image-properties" hidden><label class="field-label" for="screenImageFit">Image fit</label><select id="screenImageFit" class="text-input"><option value="contain">Contain image</option><option value="cover">Fill · center crop</option></select><label class="field-label" for="screenThreshold">Bitmap threshold <span id="screenThresholdValue">128</span></label><input id="screenThreshold" type="range" min="0" max="255" value="128"><label class="field-label" for="screenDither">Dithering</label><select id="screenDither" class="text-input"><option value="threshold">Threshold</option><option value="none">No dithering</option><option value="floydsteinberg">Floyd–Steinberg</option><option value="atkinson">Atkinson</option></select><span class="screen-side-note">Source images are converted to 1-bit monochrome pixels before upload. Transparency maps to black.</span></div>
+            <div class="screen-inspector-actions"><button id="screenDeleteButton" class="button danger" type="button">Delete element</button></div>
+          </div></article>
+        </div>
+        <article class="panel ai-panel"><div class="panel-heading"><div><h3>AI Screen Assistant <span class="free-badge">FREE TIER</span></h3><p id="aiAssistantSubtitle">Generate OLED screen designs using free-tier AI models. A generated design is only applied after your confirmation.</p></div><span id="aiDesignerStatus" class="local-tag">AI NOT CONFIGURED</span></div><label class="field-label" for="screenAiPrompt">What do you want your OLED to show?</label><div class="ai-assistant-row"><textarea id="screenAiPrompt" class="text-input ai-prompt" maxlength="3000" placeholder="Describe one or more pages using supported OLED text and live bindings…"></textarea><button id="screenAiGenerateButton" class="button primary">Generate</button></div><div id="screenAiResponse" class="ai-response" aria-live="polite"></div><div id="aiDesignPreview" class="screen-import-preview" hidden></div><div id="aiDesignReview" class="settings-actions" hidden><button id="applyAiDesignButton" class="button primary">Apply</button><button id="cancelAiDesignButton" class="button secondary">Cancel</button><span id="aiDesignCount" class="muted"></span></div><button id="openAiSettingsButton" class="text-button" hidden>Open AI Settings</button></article>
+      </section>
+
       <section id="view-settings" class="view">
         <div class="view-intro"><div><h2>Settings</h2><p>Manage local preferences, device details, and configuration files.</p></div></div>
         <div class="settings-grid">
+          <h3 class="settings-group-heading">General</h3>
           <article class="panel settings-card"><div class="panel-heading"><div><h3>Appearance</h3><p>Choose how Macropad Studio looks.</p></div></div><label class="field-label" for="themeSelect">Theme</label><select id="themeSelect" class="text-input"><option value="dark">Dark</option><option value="light">Light</option></select><label class="field-label" for="gridGapSelect">Visual key spacing</label><select id="gridGapSelect" class="text-input"><option value="8">Compact</option><option value="12">Comfortable</option><option value="16">Relaxed</option><option value="20">Wide</option><option value="24">Extra wide</option></select></article>
+          <h3 class="settings-group-heading">Storage</h3>
           <article class="panel settings-card"><div class="panel-heading"><div><h3>Configuration files</h3><p>Versioned JSON; import preview never writes to the ESP32.</p></div></div><div class="settings-actions"><button id="exportButton" class="button secondary">Export settings</button><button id="importButton" class="button secondary">Import settings</button></div><div class="settings-divider"></div><button id="restoreUiButton" class="text-button">Restore application UI defaults</button></article>
-          <article class="panel settings-card device-info-card"><div class="panel-heading"><div><h3>Connected device</h3><p>Serial details reported by Linux.</p></div><button id="refreshDeviceInfoButton" class="icon-button" aria-label="Refresh device details">↻</button></div><dl id="deviceInfoList" class="device-info-list"></dl></article>
-          <article class="panel settings-card about-card"><div class="panel-heading"><div><h3>About Macropad Studio</h3><p>Native Electron utility for the ESP32-S3 Macropad.</p></div></div><div class="about-version"><span>Application version</span><strong id="appVersion">—</strong></div><div class="about-version"><span>Configuration format</span><strong>Version 1</strong></div><div class="about-version"><span>Visual layout</span><strong>Local to this app</strong></div></article>
+          <h3 class="settings-group-heading">AI Providers</h3>
+          <article class="panel settings-card" id="aiSettingsCard">
+            <div class="panel-heading">
+              <div>
+                <h3>AI Assistance <span class="free-badge">FREE TIER ONLY</span></h3>
+                <p>Generate OLED screen designs using free-tier models from Google Gemini or OpenRouter. Paid models and paid fallbacks are permanently blocked.</p>
+              </div>
+            </div>
+            <label class="toggle-row"><input id="aiEnabledToggle" type="checkbox"><span>Enable AI Assistance</span></label>
+            <label class="field-label" for="aiProviderSelect">AI Provider <span class="free-badge">FREE</span></label>
+            <select id="aiProviderSelect" class="text-input">
+              <option value="gemini">Google Gemini (Free Tier)</option>
+              <option value="openrouter">OpenRouter (Free Models Only)</option>
+            </select>
+            <label class="field-label" for="aiModelSelect">Model <span class="free-badge">FREE</span></label>
+            <select id="aiModelSelect" class="text-input"></select>
+            <label class="field-label" for="aiKeyInput"><span id="aiKeyInputLabel">Google Gemini API Key</span></label>
+            <div class="key-input-row">
+              <input id="aiKeyInput" class="text-input" type="password" autocomplete="new-password" spellcheck="false" placeholder="Paste your Google AI Studio API key (AIza…)">
+              <button id="toggleAiKeyButton" class="button secondary" type="button">Show</button>
+            </div>
+            <p id="aiKeyHelpText" class="help-note">Free Gemini models have rate limits and availability can change. Get a free API key from Google AI Studio.</p>
+            <div class="settings-actions">
+              <button id="saveAiKeyButton" class="button primary" type="button">Save API Key</button>
+              <button id="testAiConnectionButton" class="button secondary" type="button">Test Connection</button>
+              <button id="clearAiKeyButton" class="button secondary" type="button">Remove Key</button>
+            </div>
+            <div class="ai-status-block">
+              <span class="field-label">Status</span>
+              <div id="aiSettingsStatus" class="muted" role="status">Checking secure storage…</div>
+              <div id="aiCredentialStatus" class="muted">Credential storage: checking…</div>
+              <p id="aiStorageHelp" class="help-note" hidden></p>
+              <div class="settings-actions"><button id="retrySecureStorageButton" class="button secondary" type="button">Retry</button></div>
+              <div id="aiFreeNotice" class="notice-box">Only free-tier API models are enabled. Free models have rate limits and availability can change.</div>
+            </div>
+          </article>
+          <h3 class="settings-group-heading">Device</h3>
+          <article class="panel settings-card device-info-card"><div class="panel-heading"><div><h3>ESP32-S3 connection</h3><p>Serial details reported by the operating system.</p></div><button id="refreshDeviceInfoButton" class="icon-button" aria-label="Refresh device details" data-tooltip="Refresh the connected-device and available-port information">↻</button></div><dl id="deviceInfoList" class="device-info-list"></dl></article>
+          <h3 class="settings-group-heading">OLED</h3>
+          <article class="panel settings-card"><div class="panel-heading"><div><h3>Display capabilities</h3><p>Features supported by the current Macropad Studio firmware.</p></div></div><div class="about-version"><span>Display</span><strong>SSD1306 · 128 × 64 · monochrome</strong></div><div class="about-version"><span>Pages</span><strong>Up to 8 · SW9 advances pages</strong></div><div class="about-version"><span>Screen events</span><strong>Switches and encoder</strong></div><div class="about-version"><span>Storage</span><strong>Local JSON + ESP32 SPIFFS</strong></div></article>
+          <h3 class="settings-group-heading">Advanced</h3>
+          <article class="panel settings-card about-card"><div class="panel-heading"><div><h3>About Macropad Studio</h3><p>Native Electron utility for the ESP32-S3 Macropad.</p></div></div><div class="about-version"><span>Application version</span><strong id="appVersion">—</strong></div><div class="about-version"><span>Configuration format</span><strong>Version 3</strong></div><div class="about-version"><span>OLED pages</span><strong>Up to 8 · SW9 next page</strong></div><div class="about-version"><span>Visual layout</span><strong>Local to this app</strong></div></article>
         </div>
       </section>
     </main>
@@ -140,6 +237,13 @@
     </form>
   </dialog>
 
+  <dialog id="screenImportDialog" class="modal-dialog">
+    <form method="dialog"><div class="modal-kicker">OLED DESIGN IMPORT</div><h2>Preview screen design</h2><p id="screenImportSummary" class="muted"></p><div id="screenImportPreview" class="screen-import-preview"></div><p class="help-note">Applying imports this layout into the local editor only. It will not be uploaded to the ESP32.</p><div class="modal-actions"><button value="cancel" class="button secondary">Cancel</button><button id="screenApplyImportButton" type="button" class="button primary">Apply locally</button></div></form>
+  </dialog>
+
+  <div id="appTooltip" class="app-tooltip" role="tooltip" hidden></div>
+
+  <script src="adafruit-font.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>

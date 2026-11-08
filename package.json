@@ -1,6 +1,6 @@
 {
   "name": "macropad-app",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Configure your ESP32-S3 Macropad shortcuts, encoder, and visual layout",
   "productName": "Macropad Studio",
   "author": {
@@ -20,7 +20,7 @@
   "scripts": {
     "start": "electron .",
     "test": "node --test",
-    "check": "node --check main.js && node --check preload.js && node --check ipc-security.js && node --check serial-protocol.js && node --check serial-manager.js && node --check app-config.js && node --check config-store.js && node --check layout.js && node --check src/renderer.js",
+    "check": "node --check main.js && node --check preload.js && node --check ipc-security.js && node --check serial-protocol.js && node --check serial-manager.js && node --check app-config.js && node --check config-store.js && node --check layout.js && node --check screen-design.js && node --check ai-design.js && node --check ai-provider.js && node --check ai/common.js && node --check ai/gemini.js && node --check ai/openrouter.js && node --check ai/registry.js && node --check secure-storage.js && node --check src/renderer.js && node --check src/adafruit-font.js && node --check test/games.test.js",
     "dist": "electron-builder --linux AppImage deb pacman --x64 --publish never",
     "dist:linux": "electron-builder --linux AppImage deb pacman --x64 --publish never",
     "dist:appimage": "electron-builder --linux AppImage --x64 --publish never",
@@ -42,7 +42,7 @@
     "productName": "Macropad Studio",
     "directories": {
       "buildResources": "build",
-      "output": "dist"
+      "output": "dist/professional-release"
     },
     "asar": true,
     "npmRebuild": false,
@@ -57,6 +57,14 @@
       "app-config.js",
       "config-store.js",
       "layout.js",
+      "screen-design.js",
+      "icon-library.js",
+      "image-converter.js",
+      "image-decoder.js",
+      "ai-design.js",
+      "ai-provider.js",
+      "ai/**/*",
+      "secure-storage.js",
       "preload.js",
       "src/**/*",
       "assets/**/*",

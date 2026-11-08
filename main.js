@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain } = require("electron");
+const { app, BrowserWindow, dialog, ipcMain, safeStorage } = require("electron");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const { SerialManager } = require("./serial-manager");
@@ -14,6 +14,23 @@ const {
 } = require("./app-config");
 const { loadConfig, saveConfig } = require("./config-store");
 const { assertTrustedIpcSender, isAllowedDevelopmentUrl } = require("./ipc-security");
+const { validateScreenDesign } = require("./screen-design");
+const { getAllBuiltinIcons } = require("./icon-library");
+const { SCREEN_AI_INSTRUCTIONS, parseAiDesignResponse } = require("./ai-design");
+const {
+  getCatalog,
+  getProvider,
+  resolveProviderSelection,
+  testProviderConnection,
+  generateScreenDesignWithProvider,
+  DEFAULT_AI_PROVIDER,
+  DEFAULT_AI_MODEL
+} = require("./ai-provider");
+const { configureLinuxPasswordStore, secureCredentialStorageStatus: inspectCredentialStorage } = require("./secure-storage");
+
+// Must run before app ready. On Hyprland/Omarchy, Chromium "detect" selects insecure
+// basic_text even when gnome-keyring Secret Service is already running and unlocked.
+configureLinuxPasswordStore(app);
 
 const MAX_IMPORT_BYTES = 1024 * 1024;
 const serial = new SerialManager();
@@ -21,6 +38,79 @@ let mainWindow = null;
 let settingsFile = null;
 let appConfig = createDefaultConfig();
 let finishingQuit = false;
+
+function secureCredentialStorageStatus() {
+  return inspectCredentialStorage(safeStorage, process.platform);
+}
+
+function getAiKeyFilePath(providerId = DEFAULT_AI_PROVIDER) {
+  const safeId = String(providerId).toLowerCase().replace(/[^a-z0-9_-]/g, "") || "gemini";
+  return path.join(app.getPath("userData"), `ai-key-${safeId}.enc`);
+}
+
+async function isKeyConfiguredForProvider(providerId) {
+  const credentialStorage = secureCredentialStorageStatus();
+  if (!credentialStorage.available) return false;
+  const filePath = getAiKeyFilePath(providerId);
+  try {
+    await fs.access(filePath);
+    const encrypted = await fs.readFile(filePath);
+    const decrypted = safeStorage.decryptString(encrypted);
+    return Boolean(decrypted && decrypted.trim());
+  } catch {
+    return false;
+  }
+}
+
+async function readAiKey(providerId) {
+  const credentialStorage = secureCredentialStorageStatus();
+  if (!credentialStorage.available) {
+    throw new Error("Secure credential storage is unavailable. Unlock your keyring and try again.");
+  }
+  const filePath = getAiKeyFilePath(providerId);
+  try {
+    await fs.access(filePath);
+    const encrypted = await fs.readFile(filePath);
+    const key = safeStorage.decryptString(encrypted);
+    if (!key || !key.trim()) throw new Error("Key is empty");
+    return key.trim();
+  } catch {
+    const provider = getProvider(providerId);
+    throw new Error(`Configure an API key for ${provider.label} in Settings → AI Assistance before generating.`);
+  }
+}
+
+async function aiStatusPayload(requestedProvider) {
+  const credentialStorage = secureCredentialStorageStatus();
+  const catalog = getCatalog();
+  const currentProviderId = requestedProvider || appConfig.preferences.aiProvider || DEFAULT_AI_PROVIDER;
+  const { provider, model: currentModelId } = resolveProviderSelection(currentProviderId, appConfig.preferences.aiModel);
+
+  const providerStatuses = {};
+  for (const p of catalog.providers) {
+    providerStatuses[p.id] = {
+      keyConfigured: await isKeyConfiguredForProvider(p.id)
+    };
+  }
+
+  const keyConfigured = Boolean(providerStatuses[currentProviderId]?.keyConfigured);
+
+  return {
+    provider: currentProviderId,
+    providerLabel: provider.label,
+    model: currentModelId,
+    keyConfigured,
+    providers: providerStatuses,
+    catalog,
+    secureStorageAvailable: credentialStorage.available,
+    backend: credentialStorage.backend,
+    backendLabel: credentialStorage.label,
+    diagnosis: credentialStorage.diagnosis,
+    help: credentialStorage.help,
+    aiEnabled: Boolean(appConfig.preferences.aiEnabled),
+    freeOnly: true
+  };
+}
 
 function send(channel, value) {
   if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send(channel, value);
@@ -102,6 +192,41 @@ ipcMain.handle("device:discover", event => {
 ipcMain.handle("device:get-config", async event => {
   assertTrustedRenderer(event);
   return serial.getConfig();
+});
+
+ipcMain.handle("device:get-screen-design", async event => {
+  assertTrustedRenderer(event);
+  return serial.getScreenDesign();
+});
+
+ipcMain.handle("screen:get-icons", event => {
+  assertTrustedRenderer(event);
+  return getAllBuiltinIcons();
+});
+
+ipcMain.handle("device:save-screen-design", async (event, value) => {
+  assertTrustedRenderer(event);
+  const design = validateScreenDesign(value);
+  const confirmation = await dialog.showMessageBox(mainWindow, {
+    type: "warning",
+    title: "Upload OLED design",
+    message: `Upload ${design.pages.length} OLED page${design.pages.length === 1 ? "" : "s"} to the ESP32?`,
+    detail: `${design.pages.length > 1 ? "Physical SW9 becomes Next OLED Page and wraps to page 1 on-device. Existing macro assignments remain stored. " : "With one page, SW9 retains its existing macro assignment. "}This updates OLED storage only; it does not change shortcuts, run SAVE, or reset the Macropad.`,
+    buttons: ["Cancel", "Upload screen design"], defaultId: 0, cancelId: 0, noLink: true
+  });
+  if (confirmation.response !== 1) return { cancelled: true };
+  return { cancelled: false, ...(await serial.saveScreenDesign(design)) };
+});
+
+ipcMain.handle("device:select-screen-page", async (event, value) => {
+  assertTrustedRenderer(event);
+  if (!Number.isInteger(value) || value < 0 || value >= 8) throw new Error("OLED page index must be from 0 to 7");
+  return serial.selectScreenPage(value);
+});
+
+ipcMain.handle("device:game-command", (event, payload) => {
+  assertTrustedRenderer(event);
+  return serial.sendGameCommand(payload);
 });
 
 ipcMain.handle("device:save-config", async (event, value) => {
@@ -205,7 +330,120 @@ ipcMain.handle("settings:restore-ui-defaults", async event => {
   return persistConfig({
     ...appConfig,
     layout: defaults.layout,
+    screenDesign: defaults.screenDesign,
     preferences: defaults.preferences
+  });
+});
+
+ipcMain.handle("screen:export", async (event, value) => {
+  assertTrustedRenderer(event);
+  const result = await dialog.showSaveDialog(mainWindow, {
+    title: "Export OLED screen design", defaultPath: "macropad-screen.json",
+    filters: [{ name: "Macropad screen design", extensions: ["json"] }]
+  });
+  if (result.canceled || !result.filePath) return { cancelled: true };
+  const design = validateScreenDesign(value);
+  await fs.writeFile(result.filePath, `${JSON.stringify({ format: "macropad-screen-design", ...design }, null, 2)}\n`, { encoding: "utf8", mode: 0o600 });
+  return { cancelled: false, fileName: path.basename(result.filePath) };
+});
+
+ipcMain.handle("screen:preview-import", async event => {
+  assertTrustedRenderer(event);
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: "Import OLED screen design", properties: ["openFile"],
+    filters: [{ name: "Macropad screen design", extensions: ["json"] }]
+  });
+  if (result.canceled || !result.filePaths[0]) return { cancelled: true };
+  const filePath = result.filePaths[0];
+  const stat = await fs.stat(filePath);
+  if (stat.size > 64 * 1024) throw new Error("Screen design files must be smaller than 64 KB");
+  let parsed;
+  try { parsed = JSON.parse(await fs.readFile(filePath, "utf8")); }
+  catch (error) { throw new Error(`Could not read screen design JSON: ${error.message}`); }
+  if (!parsed || parsed.format !== "macropad-screen-design") throw new Error("This is not a Macropad screen design file");
+  const design = parsed.version === 1
+    ? validateScreenDesign({ version: 1, elements: parsed.elements })
+    : validateScreenDesign({ version: parsed.version, pages: parsed.pages, eventOptions: parsed.eventOptions });
+  return { cancelled: false, fileName: path.basename(filePath), design };
+});
+
+ipcMain.handle("ai:catalog", event => {
+  assertTrustedRenderer(event);
+  return getCatalog();
+});
+
+ipcMain.handle("ai:status", async (event, requestedProvider) => {
+  assertTrustedRenderer(event);
+  return aiStatusPayload(requestedProvider);
+});
+
+ipcMain.handle("ai:retry-secure-storage", async (event, requestedProvider) => {
+  assertTrustedRenderer(event);
+  return aiStatusPayload(requestedProvider);
+});
+
+ipcMain.handle("ai:set-key", async (event, payload) => {
+  assertTrustedRenderer(event);
+  const rawKey = typeof payload === "string" ? payload : payload?.key;
+  const providerId = (typeof payload === "object" && payload?.providerId) || appConfig.preferences.aiProvider || DEFAULT_AI_PROVIDER;
+  if (typeof rawKey !== "string") throw new Error("API key must be text");
+  const key = rawKey.trim();
+  if (!key) throw new Error("Enter an API key first.");
+  const provider = getProvider(providerId);
+  provider.assertApiKeyShape(key);
+
+  const storage = secureCredentialStorageStatus();
+  if (!storage.available) throw new Error("Secure credential storage is unavailable. API keys are not saved as plaintext.");
+
+  const filePath = getAiKeyFilePath(providerId);
+  await fs.writeFile(filePath, safeStorage.encryptString(key), { mode: 0o600 });
+  await fs.chmod(filePath, 0o600);
+  return { keyConfigured: true, providerId };
+});
+
+ipcMain.handle("ai:set-enabled", async (event, value) => {
+  assertTrustedRenderer(event);
+  if (typeof value !== "boolean") throw new Error("AI assistance setting must be enabled or disabled");
+  appConfig.preferences.aiEnabled = value;
+  await persistConfig(appConfig);
+  return { enabled: value };
+});
+
+ipcMain.handle("ai:test-connection", async (event, options = {}) => {
+  assertTrustedRenderer(event);
+  const providerId = options?.providerId || appConfig.preferences.aiProvider || DEFAULT_AI_PROVIDER;
+  const model = options?.model || appConfig.preferences.aiModel;
+  const apiKey = options?.apiKey ? options.apiKey.trim() : await readAiKey(providerId);
+  return testProviderConnection({ providerId, model, apiKey });
+});
+
+ipcMain.handle("ai:clear-key", async (event, payload) => {
+  assertTrustedRenderer(event);
+  const providerId = (typeof payload === "string" ? payload : payload?.providerId) || appConfig.preferences.aiProvider || DEFAULT_AI_PROVIDER;
+  const filePath = getAiKeyFilePath(providerId);
+  await fs.rm(filePath, { force: true });
+  return { keyConfigured: false, providerId };
+});
+
+ipcMain.handle("ai:generate-screen", async (event, request) => {
+  assertTrustedRenderer(event);
+  if (!request || typeof request.prompt !== "string" || request.prompt.trim().length < 2 || request.prompt.length > 3000) {
+    throw new Error("Describe the screen design in 2–3000 characters");
+  }
+  const current = validateScreenDesign(request.currentDesign);
+  if (!appConfig.preferences.aiEnabled) {
+    throw new Error("AI Assistance is disabled. Enable it in Settings → AI Assistance.");
+  }
+  const providerId = request?.providerId || appConfig.preferences.aiProvider || DEFAULT_AI_PROVIDER;
+  const model = request?.model || appConfig.preferences.aiModel;
+  const apiKey = await readAiKey(providerId);
+  return generateScreenDesignWithProvider({
+    providerId,
+    model,
+    apiKey,
+    prompt: request.prompt,
+    currentDesign: current,
+    parseResponse: parseAiDesignResponse
   });
 });
 

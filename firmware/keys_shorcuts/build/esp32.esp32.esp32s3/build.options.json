@@ -1,0 +1,9 @@
+{
+  "additionalFiles": "../..",
+  "compiler.optimization_flags": "-Os",
+  "customBuildProperties": "",
+  "fqbn": "esp32:esp32:esp32s3:USBMode=default,CDCOnBoot=default",
+  "hardwareFolders": "/home/rayan/.arduino15/packages/esp32/hardware/esp32/3.3.12,/home/rayan/.arduino15/packages/esp32/hardware/esp32/3.3.12",
+  "otherLibrariesFolders": "/home/rayan/Arduino/libraries",
+  "sketchLocation": "/home/rayan/Downloads/macropad-electron/firmware/keys_shorcuts"
+}
