@@ -15,9 +15,6 @@ concurrency:
 jobs:
   linux:
     runs-on: ubuntu-24.04
-    env:
-      ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
-      electron_config_cache: ${{ runner.temp }}/electron-cache
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,8 +25,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ${{ runner.temp }}/electron-cache
-            ${{ runner.temp }}/electron-builder-cache
+            ~/.cache/electron
+            ~/.cache/electron-builder
           key: ${{ runner.os }}-electron-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-electron-
@@ -61,9 +58,6 @@ jobs:
 
   windows:
     runs-on: windows-latest
-    env:
-      ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
-      electron_config_cache: ${{ runner.temp }}/electron-cache
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -74,8 +68,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ${{ runner.temp }}/electron-cache
-            ${{ runner.temp }}/electron-builder-cache
+            ~/AppData/Local/electron/Cache
+            ~/AppData/Local/electron-builder/Cache
           key: ${{ runner.os }}-electron-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-electron-
@@ -96,9 +90,6 @@ jobs:
 
   macos:
     runs-on: macos-latest
-    env:
-      ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
-      electron_config_cache: ${{ runner.temp }}/electron-cache
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -109,8 +100,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ${{ runner.temp }}/electron-cache
-            ${{ runner.temp }}/electron-builder-cache
+            ~/Library/Caches/electron
+            ~/Library/Caches/electron-builder
           key: ${{ runner.os }}-electron-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-electron-
