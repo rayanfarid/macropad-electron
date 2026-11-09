@@ -49,10 +49,10 @@ jobs:
         with:
           name: Macropad-Studio-Linux-x64
           path: |
-            dist/*.AppImage
-            dist/*.deb
-            dist/*.pacman
-            dist/*.rpm
+            dist/professional-release/*.AppImage
+            dist/professional-release/*.deb
+            dist/professional-release/*.pacman
+            dist/professional-release/*.rpm
           if-no-files-found: error
           retention-days: 30
 
