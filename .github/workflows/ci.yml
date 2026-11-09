@@ -15,21 +15,39 @@ concurrency:
 jobs:
   linux:
     runs-on: ubuntu-24.04
+    env:
+      ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
+      electron_config_cache: ${{ runner.temp }}/electron-cache
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+      - name: Cache Electron and electron-builder downloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.temp }}/electron-cache
+            ${{ runner.temp }}/electron-builder-cache
+          key: ${{ runner.os }}-electron-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-electron-
       - name: Install package build tools
         run: |
           sudo apt-get update
           sudo apt-get install -y libarchive-tools rpm
-      - run: npm ci
+      - name: Install dependencies (retry transient download failures)
+        shell: bash
+        run: bash .github/scripts/retry-transient-downloads.sh npm ci
       - run: npm run check
       - run: npm test
-      - run: npm run dist:linux
-      - run: npm run dist:rpm
+      - name: Build Linux packages (retry transient download failures)
+        shell: bash
+        run: bash .github/scripts/retry-transient-downloads.sh npm run dist:linux
+      - name: Build Linux RPM (retry transient download failures)
+        shell: bash
+        run: bash .github/scripts/retry-transient-downloads.sh npm run dist:rpm
       - uses: actions/upload-artifact@v4
         with:
           name: Macropad-Studio-Linux-x64
@@ -43,16 +61,32 @@ jobs:
 
   windows:
     runs-on: windows-latest
+    env:
+      ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
+      electron_config_cache: ${{ runner.temp }}/electron-cache
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - name: Cache Electron and electron-builder downloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.temp }}/electron-cache
+            ${{ runner.temp }}/electron-builder-cache
+          key: ${{ runner.os }}-electron-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-electron-
+      - name: Install dependencies (retry transient download failures)
+        shell: bash
+        run: bash .github/scripts/retry-transient-downloads.sh npm ci
       - run: npm run check
       - run: npm test
-      - run: npm run dist:windows
+      - name: Build Windows installers (retry transient download failures)
+        shell: bash
+        run: bash .github/scripts/retry-transient-downloads.sh npm run dist:windows
       - uses: actions/upload-artifact@v4
         with:
           name: Macropad-Studio-Windows-x64
@@ -62,16 +96,32 @@ jobs:
 
   macos:
     runs-on: macos-latest
+    env:
+      ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
+      electron_config_cache: ${{ runner.temp }}/electron-cache
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - name: Cache Electron and electron-builder downloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.temp }}/electron-cache
+            ${{ runner.temp }}/electron-builder-cache
+          key: ${{ runner.os }}-electron-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-electron-
+      - name: Install dependencies (retry transient download failures)
+        shell: bash
+        run: bash .github/scripts/retry-transient-downloads.sh npm ci
       - run: npm run check
       - run: npm test
-      - run: npm run dist:mac
+      - name: Build macOS installers (retry transient download failures)
+        shell: bash
+        run: bash .github/scripts/retry-transient-downloads.sh npm run dist:mac
       - uses: actions/upload-artifact@v4
         with:
           name: Macropad-Studio-macOS
