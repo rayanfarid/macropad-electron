@@ -56,7 +56,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Macropad-Studio-Windows-x64
-          path: dist/*.exe
+          path: dist/professional-release/*-Setup.exe
           if-no-files-found: error
           retention-days: 30
 
@@ -76,7 +76,7 @@ jobs:
         with:
           name: Macropad-Studio-macOS
           path: |
-            dist/*.dmg
-            dist/*.zip
+            dist/professional-release/*.dmg
+            dist/professional-release/*.zip
           if-no-files-found: error
           retention-days: 30
