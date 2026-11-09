@@ -25,6 +25,12 @@ When more than one page is uploaded, physical firmware slot **SW9** becomes **Ne
 
 The sketch expects the ESP32 Arduino core, Adafruit GFX, and Adafruit SSD1306 libraries. In Arduino IDE, open the sketch from the `firmware` directory, select the matching ESP32-S3 board, set **USB Mode** to **USB-OTG (TinyUSB)** and **USB CDC On Boot** to **Disabled**, then upload. This is a firmware update; it does not automatically run from the desktop app. The display wiring used by this sketch is SDA GPIO 4, SCL GPIO 5, and I²C address `0x3C` (some modules use `0x3D`).
 
+## Hardware and Wiring
+
+See [Hardware Wiring](docs/HARDWARE.md) for the verified ESP32-S3 GPIO assignments and connection details. The 3×3 matrix diagram is shown below.
+
+![3×3 key matrix wiring diagram](docs/hardware/keyboard_matrix_diagram.svg)
+
 Local screen designs are saved in app settings and imported/exported as versioned JSON. They do not change the device. Upload requires a native confirmation. Single-page uploads keep the legacy `SCREEN BEGIN/CLEAR/ITEM/VALIDATE/COMMIT/GET` path. Multi-page uploads use the compatible `SCREEN PAGES …` / `SCREEN PAGE …` extension and fail clearly if the connected firmware is too old. Screen data is stored in the ESP32 SPIFFS file system (with a legacy Preferences `scrn` read fallback); it does not issue macro `SAVE` or `RESET`. The legacy fixed screen remains active until a screen design is explicitly committed. The firmware source must be flashed to the ESP32 manually before screen upload features are available.
 
 ## ESP32 Games
